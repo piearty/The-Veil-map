@@ -10,25 +10,29 @@ colors = {'blue':'#545b90', 'yellow':'#fbfd54', 'green':'#438718', 'red':'#a90f0
 
 emotions = {'sad':{'color':colors['blue']}, 'joyful':{'color':colors['yellow']}, 'scared':{'color':colors['green']}, 'angry':{'color':colors['red']}, 'powerful':{'color':colors['purple']}, 'peaceful':{'color':colors['orange']}}
 labelColors = {'sadLabel':{'fontcolor':colors['blue']}, 'joyfulLabel':{'fontcolor':colors['yellow']}, 'scaredLabel':{'fontcolor':colors['green']}, 'angryLabel':{'fontcolor':colors['red']}, 'powerfulLabel':{'fontcolor':colors['purple']}, 'peacefulLabel':{'fontcolor':colors['orange']}}
-toward = {'arrowhead':'odot'}
+isFor = {'arrowhead':'odot'}
+isForming = {'style':'dotted'}
 
 
 class Connection:
-    def __init__(self, source, target, state, arrow=None, label=None, fontcolor=None):
+    def __init__(self, source, target, state, label=None, fontcolor=None, arrow=None, line=None):
         self.source = source
         self.target = target
         self.state = state
-        self.arrow = arrow
         self.label = label
         self.fontcolor = fontcolor
+        self.arrow = arrow
+        self.line = line
+
 
     def to_dict(self):
         return dict(
             [(k, v) for k, v in self.__dict__.items() if not k.startswith('_')]
         )
 
-RibbonCalder = Connection('Ribbon', 'Calder', 'peaceful', None, {'label':'2'}, labelColors['peacefulLabel'])
-CalderRibbon = Connection('Calder', 'Ribbon', 'scared', toward)
+RibbonCalder = Connection('Ribbon', 'Calder', 'peaceful', {'label':'2'}, labelColors['peacefulLabel'])
+CalderRibbon = Connection('Calder', 'Ribbon', 'scared', None, None, None, isFor)
+RibbonAliquot = Connection('Ribbon', 'Aliquot', 'peaceful', {'label':'1'}, labelColors['peacefulLabel'])
 
 def listConnection(singleConnection):
     names = [singleConnection.source, singleConnection.target]
@@ -42,6 +46,11 @@ def listConnection(singleConnection):
     names.append(attributes)
     return names
 
-g.add_edges_from([listConnection(RibbonCalder), listConnection(CalderRibbon)])
+def addEdge(singleConnection):
+    g.add_edges_from([listConnection(singleConnection)])
+
+
+addEdge(RibbonCalder)
+addEdge(CalderRibbon)
 
 graphdot = write_dot(g,'multi.dot')
