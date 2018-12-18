@@ -6,3 +6,4 @@
 - multiple export options?
 - file directory
 - color picker
+- affect nodes as well

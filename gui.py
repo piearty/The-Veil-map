@@ -1,3 +1,5 @@
+#this creates the gui to interface with the graph.py function
+
 #lets app accept command line arguments
 import sys
 
@@ -6,56 +8,36 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+#imports graph.py
 import graph
 
 
-
+#class that is the gui
 class VeilGUI(QDialog):
 
    def __init__(self, parent = None):
       super(VeilGUI, self).__init__(parent)
+      
+      #names gui window
       self.setWindowTitle('Veil Relationship Map GUI')
 
+      #list to contain edges created later
       self.edgesList = []
 
-      #two buttons, the first one runs the add_button_clicked function and the second one exits the program
-      addingButton = QPushButton("Add")
-      addingButton.setCheckable(True)
-
-      editingButton = QPushButton("Edit")
-      editingButton.setCheckable(True)
-      editingButton.setEnabled(False)
-
-      deletingButton = QPushButton("Delete")
-      deletingButton.setCheckable(True)
-      deletingButton.setEnabled(False)
-      
-      savingButton = QPushButton("Save")
-      savingButton.setCheckable(True)
-
-      edgeButtonsBox = QDialogButtonBox()
-      edgeButtonsBox.addButton(addingButton, QDialogButtonBox.ActionRole)
-      edgeButtonsBox.addButton(editingButton, QDialogButtonBox.ActionRole)
-      edgeButtonsBox.addButton(deletingButton, QDialogButtonBox.ActionRole)      
-      
-      addingButton.clicked.connect(self.add_button_clicked)
-  #    editingButton.clicked.connect(self.edit_button_clicked)
-   #   deletingButton.clicked.connect(self.del_button_clicked)
-
-      saveButtonBox = QDialogButtonBox()
-      saveButtonBox.addButton(savingButton, QDialogButtonBox.ActionRole)
-
-      savingButton.clicked.connect(self.save_button_clicked)
-
+      #creates the grid where the widgets will be placed
       grid = QGridLayout()
+
+      #adds widgets
       grid.addWidget(self.namesBoxGroup(), 0, 0)
       grid.addWidget(self.obligationsBoxGroup(), 1,0)
       grid.addWidget(self.statesBoxGroup(), 0, 1)
-      grid.addWidget(edgeButtonsBox, 2, 0)
-      grid.addWidget(saveButtonBox, 3, 1)
+      grid.addWidget(self.edgeButtonsGroup(), 2, 0)
+      grid.addWidget(self.saveButtonGroup(), 3, 1)
 
+      #creates grid
       self.setLayout(grid)
 
+   #
    def radioMaker(self, label, buttonsList):
       radioBox = QGroupBox(label)
       radioLayout = QVBoxLayout()
@@ -70,6 +52,49 @@ class VeilGUI(QDialog):
       radioBox.setLayout(radioLayout)
 
       return radioBox
+
+   def edgeButtonsGroup(self):
+      #creates buttons labeled add, edit, and delete
+      addingButton = QPushButton("Add")
+      addingButton.setCheckable(True)
+
+      editingButton = QPushButton("Edit")
+      editingButton.setCheckable(True)
+      editingButton.setEnabled(False)
+
+      deletingButton = QPushButton("Delete")
+      deletingButton.setCheckable(True)
+      deletingButton.setEnabled(False)
+
+      #box containing add, edit, and delete buttons (these modify the edges)
+      edgeButtonsBox = QDialogButtonBox()
+      edgeButtonsBox.addButton(addingButton, QDialogButtonBox.ActionRole)
+      edgeButtonsBox.addButton(editingButton, QDialogButtonBox.ActionRole)
+      edgeButtonsBox.addButton(deletingButton, QDialogButtonBox.ActionRole)      
+      
+      #when clicked, run the add_button_clicked, edit_button_clicked, and del_button_clicked methods respectively
+      #latter two not implemented yet :'(
+      addingButton.clicked.connect(self.add_button_clicked)
+  #    editingButton.clicked.connect(self.edit_button_clicked)
+   #   deletingButton.clicked.connect(self.del_button_clicked)
+
+      return edgeButtonsBox
+      
+
+   def saveButtonGroup(self):
+
+      #creates button labeled save
+      savingButton = QPushButton("Save")
+      savingButton.setCheckable(True)
+
+      #box containing save button
+      self.saveButtonBox = QDialogButtonBox()
+      self.saveButtonBox.addButton(savingButton, QDialogButtonBox.ActionRole)
+
+      #when clicked, runs the save_button_clicked method
+      savingButton.clicked.connect(self.save_button_clicked)
+
+      return self.saveButtonBox
 
    def namesBoxGroup(self):
       namesBox = QGroupBox('Names')
@@ -114,7 +139,7 @@ class VeilGUI(QDialog):
       if source and target:
          connectionObject = graph.Connection(source, target, state, obligation)
          print(graph.listConnection(connectionObject))
-         print(self.edgesList)
+         #print(self.edgesList)
 
 
    def save_button_clicked(self):
