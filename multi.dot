@@ -1,5 +1,0 @@
-digraph  {
-Calder;
-Ribbon;
-Calder -> Ribbon  [arrowhead=odot, color="#438718", key=0, style=bold];
-}

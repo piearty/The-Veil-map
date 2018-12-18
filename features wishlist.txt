@@ -1,0 +1,8 @@
+- autocomplete when word is entered 
+- display selectable list of edges
+    - when selected, can be edited or deleted
+- import from dot file?
+- png preview
+- multiple export options?
+- file directory
+- color picker
