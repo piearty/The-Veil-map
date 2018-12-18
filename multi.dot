@@ -1,6 +1,5 @@
 digraph  {
-Ribbon;
 Calder;
-Ribbon -> Calder  [color="#ea8218", fontcolor="#ea8218", key=0, label=2];
-Calder -> Ribbon  [arrowhead=odot, color="#438718", key=0];
+Ribbon;
+Calder -> Ribbon  [arrowhead=odot, color="#438718", key=0, style=bold];
 }
