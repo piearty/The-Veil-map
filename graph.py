@@ -87,3 +87,20 @@ def addEdge(singleConnection):
 
 def removeEdge(singleConnection):
     g.remove_edge(*listConnection(singleConnection)[:2])
+    if len(nx.algorithms.descendants(g, listConnection(singleConnection)[0])) == 0:
+        g.remove_node(listConnection(singleConnection)[0])
+    if len(nx.algorithms.descendants(g, listConnection(singleConnection)[1])) == 0:
+        g.remove_node(listConnection(singleConnection)[1])
+
+
+print(listConnection(RibbonCalder))
+addEdge(RibbonCalder)
+#print(nx.algorithms.descendants(g, listConnection(RibbonCalder)[0]))
+
+removeEdge(RibbonCalder)
+
+print(g, listConnection(RibbonCalder)[0])
+
+p = to_pydot(g)
+p.write_dot('test.dot')
+p.write_png('test.png', prog='dot')

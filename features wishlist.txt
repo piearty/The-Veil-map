@@ -1,13 +1,13 @@
-- autocomplete when word is entered 
+
 - display selectable list of edges
     - when selected, can be edited or deleted
 - import from dot file?
-- png preview
-- multiple export options?
+- png preview in scrollable/resizable window
 - file directory
 
+- multiple export options?
+- autocomplete when word is entered 
 - affect node attributes as well
-- display png in scrollable/resizable window
 
 eventual general widget
 - color picker

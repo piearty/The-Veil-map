@@ -12,7 +12,6 @@ from PyQt5.QtGui import *
 # imports graph.py
 import graph
 
-
 # class that is the gui
 class VeilGUI(QDialog):
 
@@ -129,7 +128,7 @@ class VeilGUI(QDialog):
       # when delete button is clicked, run the delete button method
       # also run buttons_enabled method
       self.deletingButton.clicked.connect(self.del_button_clicked)
-      self.deletingButton.clicked.connect(self.buttons_enabled)
+      #self.deletingButton.clicked.connect(self.buttons_enabled)
 
       return edgeButtonsBox
 
@@ -190,7 +189,7 @@ class VeilGUI(QDialog):
    # this one determines the edge's label
    def obligationsBoxGroup(self):
       #group box label
-      obligationBox = QGroupBox('Obligations owed')
+      obligationBox = QGroupBox('Obligations over ending person')
       #label of actual spin box
       self.obligationLabel = QLabel('Enter integer:')
       #creates spin box
@@ -225,26 +224,36 @@ class VeilGUI(QDialog):
 
       return edgeComboBox
 
-   # map box to show the map's progress
+   # map box to show the updated map
+   # displays a PNG
    def showMap(self):
+      #creates the group and labels it
       mapBox = QGroupBox('Map')
+      #creates a label to put the png in
       self.mapPic = QLabel()
+      #sets the pixmap (the thing that displays the png) as the desired png
       self.mapPic.setPixmap(QPixmap("test.png"))
+      #vertical layout
       mapBoxLayout = QVBoxLayout()
+      #adds label to layout
       mapBoxLayout.addWidget(self.mapPic)      
       # sets box as layout
       mapBox.setLayout(mapBoxLayout)
-      
 
       return mapBox
    
    # # # #  METHODS # # # #
 
+   # method to enable or disable the edit and delete buttons
    def buttons_enabled(self):
+      # if there's 1+ edge present, emable the buttons (make them clickable)
       if self.edgesList:
          self.editingButton.setEnabled(True)
          self.deletingButton.setEnabled(True)
-      if self.edgesList == [None]:
+      # if no edges are present, disable the buttons
+      # this only disables if you click the delete button twice once it's empty? :(
+      # i think it's bc it only calls/checks when the delete button is pressed so
+      if not any(self.edgesList):
          self.editingButton.setEnabled(False)
          self.deletingButton.setEnabled(False)
 
@@ -274,24 +283,23 @@ class VeilGUI(QDialog):
          connectionsList = graph.listConnection(connectionObject)
          self.edgeCombo.addItem(connectionsList[0]+' to '+connectionsList[1])
          for edge in self.edgesList:
-            if edge not in self.savedEdgesList:
-               self.savedEdgesList.append(edge)
+            if edge:
                graph.addEdge(edge)
                p = graph.to_pydot(graph.g)
+               p.write_dot('test.dot')
                p.write_png('test.png', prog='dot')
                self.mapPic.setPixmap(QPixmap("test.png"))
 
-
+   
    # this doesn't quite work yet BUT IT WILL!! 
    def del_button_clicked(self):
       refNum = self.edgeCombo.currentIndex()
       print(refNum)
-      if self.savedEdgesList[refNum]:
+      if self.edgesList[refNum]:
          graph.removeEdge(self.edgesList[refNum])
          self.edgesList[refNum] = None
          p = graph.to_pydot(graph.g)
          p.write_png('test.png', prog='dot')
-         self.savedEdgesList[refNum] = None
       else:
          self.edgesList[refNum] = None
       self.edgeCombo.removeItem(refNum)
