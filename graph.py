@@ -86,11 +86,7 @@ def addEdge(singleConnection):
     g.add_edges_from([listConnection(singleConnection)])
 
 def removeEdge(singleConnection):
-    g.remove_edge(listConnection(singleConnection))
-
-
-addEdge(RibbonCalder)
-removeEdge(RibbonCalder)
+    g.remove_edge(*listConnection(singleConnection)[:2])
 
 #turns the graph g into a pydot format
 p = to_pydot(g)

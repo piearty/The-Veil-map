@@ -4,9 +4,10 @@
 import sys
 
 #imports the gui aspect of pyqt
-from PyQt5 import QtCore, QtWidgets, Qt
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 
 #imports graph.py
 import graph
@@ -27,6 +28,9 @@ class VeilGUI(QDialog):
       #dict to contain radio boxes created later
       self.radioButtonsDict = {}
 
+      #list to contain saved edges created later
+      self.savedEdgesList = []
+
       #creates the grid where the widgets will be placed
       grid = QGridLayout()
 
@@ -37,6 +41,7 @@ class VeilGUI(QDialog):
       grid.addWidget(self.tenorBoxGroup(), 1, 1)
       grid.addWidget(self.lineBoxGroup(), 2, 0)
       grid.addWidget(self.addButtonGroup(), 2, 1)
+      grid.addWidget(self.showMap(), 0, 3, 3, 3)
       grid.addWidget(self.edgeComboBoxGroup(), 3, 0, 1, 2)
       grid.addWidget(self.edgeButtonsGroup(), 4,0)
       grid.addWidget(self.saveButtonGroup(), 4, 1)
@@ -169,6 +174,21 @@ class VeilGUI(QDialog):
       self.edgeCombo.currentIndexChanged.connect(self.buttons_enabled)
 
       return edgeComboBox
+
+   
+   def showMap(self):
+      mapBox = QGroupBox('Map')
+      self.mapPic = QLabel()
+      self.mapPic.setPixmap(QPixmap("test.png"))
+      self.mapPic.show()
+      mapBoxLayout = QVBoxLayout()
+      mapBoxLayout.addWidget(self.mapPic)      
+      #sets box as layout
+      mapBox.setLayout(mapBoxLayout)
+
+      self.mapPic.show()
+
+      return mapBox
    
    #### METHODS ####
 
@@ -206,17 +226,24 @@ class VeilGUI(QDialog):
 
    def del_button_clicked(self):
       refNum = self.edgeCombo.currentIndex()
-      graph.removeEdge(self.edgesList[refNum])
-      self.edgesList.pop(refNum)
+      print(refNum)
+      if self.savedEdgesList[refNum]:
+         graph.removeEdge(self.edgesList[refNum])
+         self.edgesList[refNum] = None
+         p = graph.to_pydot(graph.g)
+         p.write_png('test.png', prog='dot')
+         self.savedEdgesList[refNum] = None
+      else:
+         self.edgesList[refNum] = None
       self.edgeCombo.removeItem(refNum)
-
    
    def save_button_clicked(self):
       for edge in self.edgesList:
-         graph.addEdge(edge)
-         p = graph.to_pydot(graph.g)
-         p.write_png('test.png', prog='dot')
-
+         if edge not in self.savedEdgesList:
+            self.savedEdgesList.append(edge)
+            graph.addEdge(edge)
+            p = graph.to_pydot(graph.g)
+            p.write_png('test.png', prog='dot')
 
 
 def main():
