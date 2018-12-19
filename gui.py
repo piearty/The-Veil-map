@@ -283,7 +283,8 @@ class VeilGUI(QDialog):
          connectionsList = graph.listConnection(connectionObject)
          self.edgeCombo.addItem(connectionsList[0]+' to '+connectionsList[1])
          for edge in self.edgesList:
-            if edge:
+            if edge not in self.savedEdgesList:
+               self.savedEdgesList.append(edge)
                graph.addEdge(edge)
                p = graph.to_pydot(graph.g)
                p.write_dot('test.dot')
@@ -291,7 +292,7 @@ class VeilGUI(QDialog):
                self.mapPic.setPixmap(QPixmap("test.png"))
 
    
-   # this doesn't quite work yet BUT IT WILL!! 
+   # 
    def del_button_clicked(self):
       refNum = self.edgeCombo.currentIndex()
       print(refNum)
@@ -300,11 +301,13 @@ class VeilGUI(QDialog):
          self.edgesList[refNum] = None
          p = graph.to_pydot(graph.g)
          p.write_png('test.png', prog='dot')
+         self.mapPic.setPixmap(QPixmap("test.png"))
       else:
          self.edgesList[refNum] = None
       self.edgeCombo.removeItem(refNum)
       print(self.edgesList)
       self.buttons_enabled()
+      
 
 
 def main():

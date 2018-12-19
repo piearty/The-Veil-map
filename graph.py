@@ -8,6 +8,9 @@ import networkx as nx
 from networkx.drawing.nx_pydot import to_pydot, write_dot
 import pydot
 
+# random in order to create unique keys
+import random
+
 # defines a directed multigraph called 'The Veil':
 # a graph that can have multiple lines between two nodes, and has arrows
 g = nx.MultiDiGraph(label="The Veil")
@@ -50,12 +53,25 @@ class Connection:
             [(k, v) for k, v in self.__dict__.items() if not k.startswith('_')]
         )
 
+
 RibbonCalder = Connection('Ribbon', 'Calder', 'joyful')
+RibbonCalder2 = Connection('Ribbon', 'Calder', 'peaceful')
+#RibbonThiago = Connection('Ribbon', 'Thiago', 'peaceful')
+
+ID_list = []
+
+def uniqueID():
+    singleID = random.getrandbits(20)
+    if singleID not in ID_list:
+        ID_list.append(singleID)
+        return singleID
+
+
 
 # turns object attributes into a list that can be readable by add_edges_from
 def listConnection(singleConnection):
     # initial list ['Ribbon', 'Calder']
-    names = [singleConnection.source, singleConnection.target]
+    names = [singleConnection.source, singleConnection.target, str(uniqueID())]
     # an empty dictionary
     attributes = {}
     # calls the .to_dict() method in the singleConnection object and saves dictionary in connectDict
@@ -85,21 +101,26 @@ def listConnection(singleConnection):
 def addEdge(singleConnection):
     g.add_edges_from([listConnection(singleConnection)])
 
+# function to remove given edge
 def removeEdge(singleConnection):
-    g.remove_edge(*listConnection(singleConnection)[:2])
-    if len(nx.algorithms.descendants(g, listConnection(singleConnection)[0])) == 0:
-        g.remove_node(listConnection(singleConnection)[0])
-    if len(nx.algorithms.descendants(g, listConnection(singleConnection)[1])) == 0:
-        g.remove_node(listConnection(singleConnection)[1])
+    connectionAsList = listConnection(singleConnection)
+    #unpacks and removes given edge
+    g.remove_edge(*connectionAsList[:3])
+    if len(nx.algorithms.descendants(g, connectionAsList[0])) == 0:
+        g.remove_node(connectionAsList[0])
+    if len(nx.algorithms.descendants(g, connectionAsList[1])) == 0:
+        g.remove_node(connectionAsList[1])
 
 
 print(listConnection(RibbonCalder))
 addEdge(RibbonCalder)
+#addEdge(RibbonThiago)
+
 #print(nx.algorithms.descendants(g, listConnection(RibbonCalder)[0]))
 
-removeEdge(RibbonCalder)
+#removeEdge(RibbonCalder)
 
-print(g, listConnection(RibbonCalder)[0])
+#print(g, listConnection(RibbonCalder)[0])
 
 p = to_pydot(g)
 p.write_dot('test.dot')
