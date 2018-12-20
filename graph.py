@@ -17,7 +17,7 @@ g = nx.MultiDiGraph(label="The Veil")
 
 # colors for the emotional states. 
 # these are dictionaries so that the add_edges_from networkx function can read them properly
-colors = {'blue':'#002ba1', 'yellow':'# f6e53d', 'green':'# 438718', 'red':'# a90f0f', 'purple':'# 954ed2', 'orange':'# ea8218'}
+colors = {'blue':'#002ba1', 'yellow':'#f6e53d', 'green':'#438718', 'red':'#a90f0f', 'purple':'#954ed2', 'orange':'#ea8218'}
 
 # states and obligationColors that are linked to the aforementioned colors
 # they are dictionaries so i can reference their names instead of the color when using attributes. like states[sad] instead of colors[blue]
@@ -38,10 +38,11 @@ strength = {'tenuous':{'style':'dotted'}, 'strong':{'style':'bold'}}
 # a class that creates objects that can be used to make edges with the add_edges_from function
 # attributes are all attributes that the edge will have
 class Connection:
-    def __init__(self, source, target, state, obligation=None, tenor=None, line='strong'):
+    def __init__(self, source, target, state, key, obligation=None, tenor=None, line='strong'):
         self.source = source
         self.target = target
         self.state = state
+        self.key = key
         self.obligation = obligation
         self.tenor = tenor
         self.line = line
@@ -54,52 +55,46 @@ class Connection:
         )
 
 
-RibbonCalder = Connection('Ribbon', 'Calder', 'joyful')
-RibbonCalder2 = Connection('Ribbon', 'Calder', 'peaceful')
-#RibbonThiago = Connection('Ribbon', 'Thiago', 'peaceful')
-
-ID_list = []
-
-def uniqueID():
-    singleID = random.getrandbits(20)
-    if singleID not in ID_list:
-        ID_list.append(singleID)
-        return singleID
 
 
+key_list = []
+
+def uniqueKey():
+    singleKey = random.getrandbits(20)
+    if singleKey not in key_list:
+        key_list.append(singleKey)
+        return singleKey
+
+RibbonCalder = Connection('Ribbon', 'Calder', 'joyful', uniqueKey())
+RibbonCalder2 = Connection('Ribbon', 'Calder', 'peaceful', uniqueKey())
+RibbonThiago = Connection('Ribbon', 'Thiago', 'peaceful', uniqueKey())
 
 # turns object attributes into a list that can be readable by add_edges_from
 def listConnection(singleConnection):
-    # initial list ['Ribbon', 'Calder']
-    names = [singleConnection.source, singleConnection.target, str(uniqueID())]
-    # an empty dictionary
-    attributes = {}
+    # list to contain connection attributes
+    connectionList = [singleConnection.source, singleConnection.target, 'key=' + str(singleConnection.key)]
     # calls the .to_dict() method in the singleConnection object and saves dictionary in connectDict
     connectDict = singleConnection.to_dict()
     # for attribute key in connectDict
     for attribute in connectDict:
         # if it's not already in there
          # merges attribute to attributes dictionary according to attribute
-        if connectDict[attribute] and attribute not in ('source', 'target'):
+        if connectDict[attribute] and attribute not in ('source', 'target'):            
             if attribute is 'state':
-                attributes.update(states[singleConnection.state])
+                connectionList.append(states[singleConnection.state])
             elif attribute is 'obligation':
-                attributes.update({'label':singleConnection.obligation})
-                attributes.update(obligationColors[singleConnection.state])
+                connectionList.append({'label':singleConnection.obligation})
+                connectionList.append(obligationColors[singleConnection.state])
             elif attribute is 'tenor':
-                attributes.update(tenors[singleConnection.tenor])
+                connectionList.append(tenors[singleConnection.tenor])
             elif attribute is 'line':
-                attributes.update(strength[singleConnection.line])
-
-    # adds dictionary to the names list
-    # looks like ['Ribbon', 'Calder' {'color': '# ea8218', other attributes}]
-    names.append(attributes)
-    return names
+                connectionList.append(strength[singleConnection.line])
+    return connectionList
 
 # function to shorten typing bc i'm lazy
 # uses add_edges_from to create an edge
 def addEdge(singleConnection):
-    g.add_edges_from([listConnection(singleConnection)])
+    g.add_edge(*listConnection(singleConnection))
 
 # function to remove given edge
 def removeEdge(singleConnection):
@@ -112,13 +107,17 @@ def removeEdge(singleConnection):
         g.remove_node(connectionAsList[1])
 
 
-print(listConnection(RibbonCalder))
+print(*listConnection(RibbonCalder)[2:3])
+print(*listConnection(RibbonCalder2)[:3])
 addEdge(RibbonCalder)
+addEdge(RibbonCalder2)
 #addEdge(RibbonThiago)
 
 #print(nx.algorithms.descendants(g, listConnection(RibbonCalder)[0]))
+print(g.edges())
+removeEdge(RibbonCalder2)
 
-#removeEdge(RibbonCalder)
+print(g.edges())
 
 #print(g, listConnection(RibbonCalder)[0])
 

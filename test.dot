@@ -1,14 +1,4 @@
 digraph {
-	graph [bb="0,0,76.693,108"];
+	graph [bb="0,0,0,0"];
 	node [label="\N"];
-	Ribbon	 [height=0.5,
-		pos="38.347,90",
-		width=1.0652];
-	Calder	 [height=0.5,
-		pos="38.347,18",
-		width=0.95686];
-	Ribbon -> Calder [key=118318,
-	color="# f6e53d",
-	pos="e,38.347,36.104 38.347,71.697 38.347,63.983 38.347,54.712 38.347,46.112",
-	style=bold];
 }
