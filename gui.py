@@ -212,6 +212,8 @@ class VeilGUI(QDialog):
       edgeComboBox = QGroupBox('List of connections')
       # creates combo box
       self.edgeCombo = QComboBox()
+      # creates empty entry
+      self.edgeCombo.addItem('')
       # horizontal layout
       edgeComboBoxLayout = QHBoxLayout()
       # save_buttons combo box to layout
@@ -246,18 +248,18 @@ class VeilGUI(QDialog):
 
    # method to enable or disable the edit and delete buttons
    def buttons_enabled(self):
-      # if there's 1+ edge present, emable the buttons (make them clickable)
-      if self.edgesList:
+      # if the combo box is not at the default (blank), enable the buttons (make them clickable)
+      if self.edgeCombo.currentIndex() >= 1:
          self.editingButton.setEnabled(True)
          self.deletingButton.setEnabled(True)
-      # if no edges are present, disable the buttons
+      # if the combo box is at the default (blank), disable the buttons
       # this only disables if you click the delete button twice once it's empty? :(
       # i think it's bc it only calls/checks when the delete button is pressed so
-      if not any(self.edgesList):
+      elif self.edgeCombo.currentIndex() == 0:
          self.editingButton.setEnabled(False)
          self.deletingButton.setEnabled(False)
 
-
+   # method when you click 'Save connection'
    def save_button_clicked(self):
       # sets variables then clears the text fields when applicable
       source = self.sourceLine.text()
@@ -266,6 +268,7 @@ class VeilGUI(QDialog):
       target = self.targetLine.text()
       self.targetLine.setText('')
       
+      # if the obligations aren't 0 then set obligation (so there's no '0' label)
       if self.obligationSpinBox.value() != 0:
          obligation = self.obligationSpinBox.value()
       else:
@@ -277,35 +280,54 @@ class VeilGUI(QDialog):
       
       line = self.radioButtonsDict['lineGroup'].checkedButton().text()
 
+      # here's the meat
+      # if the person has filled out both source and target (minimum necessary to make a node)
       if source and target:
+         # set connectionObject as the object defined by graph.Connection
+         # with all this stuff we defined earlier as attributes
          connectionObject = graph.Connection(source, target, state, graph.uniqueKey(), obligation, tenor, line)
+         # add object to a list
          self.edgesList.append(connectionObject)
+         # add object to combo box
+         # looks like: Ribbon to Calder, joyful
          self.edgeCombo.addItem(source + ' to ' + target + ', ' + state)
+         # for edge in the list
          for edge in self.edgesList:
-            if edge not in self.savedEdgesList:
+            # if it's not in savedEdgesList, add it to savedEdgesList and add the edge to the graph
+            # (there's probably a better way to do this but I haven't figured it out)
+            if edge and edge not in self.savedEdgesList:
                self.savedEdgesList.append(edge)
                graph.addEdge(edge)
+               #writes graph so it changes before the viewer's very eyes :o
                p = graph.to_pydot(graph.g)
                p.write_dot('test.dot')
                p.write_png('test.png', prog='dot')
                self.mapPic.setPixmap(QPixmap("test.png"))
 
    
-   # 
+   # this doesn't quite work but
+   # it's supposed to delete the selected edge
+   # gets wonky when you do it 'out of order'
    def del_button_clicked(self):
-      refNum = self.edgeCombo.currentIndex()
-      print(refNum)
+      # index number is the currently selected entry in the combo box
+      # -1 bc the blank default edge exists
+      refNum = self.edgeCombo.currentIndex() - 1
+      print(refNum, graph.g.edges(), self.edgesList[refNum])
+      # if that exists in the edges list
       if self.edgesList[refNum]:
+         # remove the edge from the graph
          graph.removeEdge(self.edgesList[refNum])
-         self.edgesList[refNum] = None
+         # set the edge in the list to None
+         self.edgesList.pop(refNum)
+         # removes it from the combo box
+         self.edgeCombo.removeItem(refNum + 1)
+         print(refNum, graph.g.edges())
+         # checks if 
+         # self.buttons_enabled()
+      # writes to graph and displays the png
          p = graph.to_pydot(graph.g)
          p.write_png('test.png', prog='dot')
          self.mapPic.setPixmap(QPixmap("test.png"))
-      else:
-         self.edgesList[refNum] = None
-      self.edgeCombo.removeItem(refNum)
-      print(self.edgesList)
-      self.buttons_enabled()
       
 
 

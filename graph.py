@@ -118,18 +118,18 @@ def removeEdge(singleConnection):
         g.remove_node(connectionAsList[1])
 
 
-print(*listConnection(RibbonCalder)[2:3])
-print(*listConnection(RibbonCalder)[2:3])
+#print(*listConnection(RibbonCalder)[2:3])
+#print(*listConnection(RibbonCalder)[2:3])
 #print(*listConnection(RibbonCalder2)[:3])
-addEdge(RibbonCalder)
-addEdge(RibbonCalder2)
-addEdge(RibbonThiago)
+#addEdge(RibbonCalder)
+#addEdge(RibbonCalder2)
+#addEdge(RibbonThiago)
 
 #print(nx.algorithms.descendants(g, listConnection(RibbonCalder)[0]))
-print(g.edges())
-removeEdge(RibbonCalder)
+#print(g.edges())
+#removeEdge(RibbonCalder)
 
-print(g.edges())
+#print(g.edges())
 
 #print(g, listConnection(RibbonCalder)[0])
 
