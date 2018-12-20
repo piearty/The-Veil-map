@@ -9,6 +9,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
+# imports allowing you to access current directory
+import os.path
+
 # imports graph.py
 import graph
 
@@ -114,6 +117,9 @@ class VeilGUI(QDialog):
       #self.editingButton.setCheckable(True)
       #self.editingButton.setEnabled(False)
 
+      self.openingButton = QPushButton("Open")
+      self.openingButton.setCheckable(True)
+
       self.deletingButton = QPushButton("Delete")
       self.deletingButton.setCheckable(True)
       self.deletingButton.setEnabled(False)
@@ -121,13 +127,16 @@ class VeilGUI(QDialog):
       # box containing edit and delete buttons (these modify the edges)
       edgeButtonsBox = QDialogButtonBox()
      # edgeButtonsBox.addButton(self.editingButton, QDialogButtonBox.ActionRole)
-      edgeButtonsBox.addButton(self.deletingButton, QDialogButtonBox.ActionRole)      
+      edgeButtonsBox.addButton(self.openingButton, QDialogButtonBox.ActionRole)
+      edgeButtonsBox.addButton(self.deletingButton, QDialogButtonBox.ActionRole)
+      
       
       # below is code that's not implemented yet
       # self.editingButton.clicked.connect(self.edit_button_clicked)
 
       # when delete button is clicked, run the delete button method
       # also run buttons_enabled method
+      self.openingButton.clicked.connect(self.open_button_clicked)
       self.deletingButton.clicked.connect(self.del_button_clicked)
       #self.deletingButton.clicked.connect(self.buttons_enabled)
 
@@ -254,20 +263,28 @@ class VeilGUI(QDialog):
 
       return mapBox
    
-   # # # #  METHODS # # # #
+# ************************ METHODS ************************ #
 
    # method to enable or disable the edit and delete buttons
    def buttons_enabled(self):
       # if the combo box is not at the default (blank), enable the buttons (make them clickable)
       if self.edgeCombo.currentIndex() >= 1:
-         self.editingButton.setEnabled(True)
+      #   self.editingButton.setEnabled(True)
          self.deletingButton.setEnabled(True)
       # if the combo box is at the default (blank), disable the buttons
       # this only disables if you click the delete button twice once it's empty? :(
       # i think it's bc it only calls/checks when the delete button is pressed so
       elif self.edgeCombo.currentIndex() == 0:
-         self.editingButton.setEnabled(False)
+     #    self.editingButton.setEnabled(False)
          self.deletingButton.setEnabled(False)
+
+   # opens a file dialog so you can pick a dot file (default from the current working directory)
+   def open_button_clicked(self):
+      self.fileChosen = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd(), "DOT files (*.dot)")
+      # if one is chosen, then make it the current graph and run write_to_files()
+      if self.fileChosen[0]:
+         graph.g = graph.open_dot(self.fileChosen[0])
+         self.write_to_files(self.fileChosen[0])
 
    # method when you click 'Save connection'
    def save_button_clicked(self):
@@ -295,7 +312,7 @@ class VeilGUI(QDialog):
       if source and target:
          # set connectionObject as the object defined by graph.Connection
          # with all this stuff we defined earlier as attributes
-         connectionObject = graph.Connection(source, target, state, graph.uniqueKey(), obligation, tenor, line)
+         connectionObject = graph.Connection(source, target, state, graph.unique_key(), obligation, tenor, line)
          # add object to a list
          self.edgesList.append(connectionObject)
          # add object to combo box
@@ -307,12 +324,9 @@ class VeilGUI(QDialog):
             # (there's probably a better way to do this but I haven't figured it out)
             if edge and edge not in self.savedEdgesList:
                self.savedEdgesList.append(edge)
-               graph.addEdge(edge)
+               graph.add_edge(edge)
                #writes graph so it changes before the viewer's very eyes :o
-               p = graph.to_pydot(graph.g)
-               p.write_dot('test.dot')
-               p.write_png('map.png', prog='dot')
-               self.mapPic.addPixmap(QPixmap("map.png"))
+               self.write_to_files('map.png')
 
    
    # deletes selected edge
@@ -324,7 +338,7 @@ class VeilGUI(QDialog):
       # if that exists in the edges list
       if self.edgesList[refNum]:
          # remove the edge from the graph
-         graph.removeEdge(self.edgesList[refNum])
+         graph.remove_edge(self.edgesList[refNum])
          # set the edge in the list to None
          self.edgesList.pop(refNum)
          # removes it from the combo box
@@ -332,10 +346,14 @@ class VeilGUI(QDialog):
          print(refNum, graph.g.edges())
          # checks if 
          # self.buttons_enabled()
-      # writes to graph and displays the png
-         p = graph.to_pydot(graph.g)
-         p.write_png('map.png', prog='dot')
-         self.mapPic.setPixmap(QPixmap("map.png"))
+         # writes to graph and displays the png
+         self.write_to_files('map.png')
+
+   # writes graph so it theoretically changes before the viewer's eyes
+   def write_to_files(self, chosen):
+      p = graph.to_pydot(graph.g)
+      p.write_png(chosen, prog='dot')
+      self.mapPic.addPixmap(QPixmap(chosen))
       
 
 
