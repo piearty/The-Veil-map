@@ -1,26 +1,4 @@
 digraph {
-	graph [bb="0,0,164.44,108"];
+	graph [bb="0,0,0,0"];
 	node [label="\N"];
-	dflsjqfa	 [height=0.5,
-		pos="38.347,90",
-		width=1.0652];
-	feae	 [height=0.5,
-		pos="38.347,18",
-		width=0.75];
-	dflsjqfa -> feae [key="key=202494",
-	arrowhead=normal,
-	color="#f6e53d",
-	pos="e,38.347,36.104 38.347,71.697 38.347,63.983 38.347,54.712 38.347,46.112",
-	style=bold];
-jdsffea [height=0.5,
-	pos="129.35,90",
-	width=0.97491];
-efawe [height=0.5,
-	pos="129.35,18",
-	width=0.88464];
-jdsffea -> efawe [key="key=465701",
-arrowhead=normal,
-color="#f6e53d",
-pos="e,129.35,36.104 129.35,71.697 129.35,63.983 129.35,54.712 129.35,46.112",
-style=bold];
 }

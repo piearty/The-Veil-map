@@ -95,7 +95,7 @@ class VeilGUI(QDialog):
 
    def saveButtonGroup(self):
       # creates button labeled Save Connection
-      saveButton = QPushButton("Save Connection")
+      saveButton = QPushButton("\nSave\nConnection\n")
       saveButton.setCheckable(True)
 
       # box containing save button
@@ -109,9 +109,10 @@ class VeilGUI(QDialog):
 
    def edgeButtonsGroup(self):
       # creates buttons labeled edit, and delete, but makes it so they can't be clicked on yet
-      self.editingButton = QPushButton("Edit")
-      self.editingButton.setCheckable(True)
-      self.editingButton.setEnabled(False)
+      # edit button doesn't work yet
+     # self.editingButton = QPushButton("Edit")
+      #self.editingButton.setCheckable(True)
+      #self.editingButton.setEnabled(False)
 
       self.deletingButton = QPushButton("Delete")
       self.deletingButton.setCheckable(True)
@@ -119,7 +120,7 @@ class VeilGUI(QDialog):
 
       # box containing edit and delete buttons (these modify the edges)
       edgeButtonsBox = QDialogButtonBox()
-      edgeButtonsBox.addButton(self.editingButton, QDialogButtonBox.ActionRole)
+     # edgeButtonsBox.addButton(self.editingButton, QDialogButtonBox.ActionRole)
       edgeButtonsBox.addButton(self.deletingButton, QDialogButtonBox.ActionRole)      
       
       # below is code that's not implemented yet
@@ -229,16 +230,25 @@ class VeilGUI(QDialog):
    # map box to show the updated map
    # displays a PNG
    def showMap(self):
+      
+      #creates the group and labels it
+      self.mapPic = QGraphicsScene()
+      mapView = QGraphicsView()
+      mapView.setScene(self.mapPic)
+
+      mapView.setSceneRect(0,0,600,600)
+      #sets the pixmap (the thing that displays the png) as the desired png
+      pic = QPixmap("map.png")
+      self.mapPic.addPixmap(pic)
+      
+      mapView.show()
+      
       #creates the group and labels it
       mapBox = QGroupBox('Map')
-      #creates a label to put the png in
-      self.mapPic = QLabel()
-      #sets the pixmap (the thing that displays the png) as the desired png
-      self.mapPic.setPixmap(QPixmap("test.png"))
       #vertical layout
       mapBoxLayout = QVBoxLayout()
       #adds label to layout
-      mapBoxLayout.addWidget(self.mapPic)      
+      mapBoxLayout.addWidget(mapView)      
       # sets box as layout
       mapBox.setLayout(mapBoxLayout)
 
@@ -268,7 +278,7 @@ class VeilGUI(QDialog):
       target = self.targetLine.text()
       self.targetLine.setText('')
       
-      # if the obligations aren't 0 then set obligation (so there's no '0' label)
+      # # # # if the obligations aren't 0 then set obligation (so there's no '0' label)
       if self.obligationSpinBox.value() != 0:
          obligation = self.obligationSpinBox.value()
       else:
@@ -301,13 +311,11 @@ class VeilGUI(QDialog):
                #writes graph so it changes before the viewer's very eyes :o
                p = graph.to_pydot(graph.g)
                p.write_dot('test.dot')
-               p.write_png('test.png', prog='dot')
-               self.mapPic.setPixmap(QPixmap("test.png"))
+               p.write_png('map.png', prog='dot')
+               self.mapPic.addPixmap(QPixmap("map.png"))
 
    
-   # this doesn't quite work but
-   # it's supposed to delete the selected edge
-   # gets wonky when you do it 'out of order'
+   # deletes selected edge
    def del_button_clicked(self):
       # index number is the currently selected entry in the combo box
       # -1 bc the blank default edge exists
@@ -326,8 +334,8 @@ class VeilGUI(QDialog):
          # self.buttons_enabled()
       # writes to graph and displays the png
          p = graph.to_pydot(graph.g)
-         p.write_png('test.png', prog='dot')
-         self.mapPic.setPixmap(QPixmap("test.png"))
+         p.write_png('map.png', prog='dot')
+         self.mapPic.setPixmap(QPixmap("map.png"))
       
 
 
