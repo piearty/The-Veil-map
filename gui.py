@@ -33,8 +33,16 @@ class VeilGUI(QDialog):
       # list to contain saved edges created later
       self.savedEdgesList = []
 
+      # makes a fileChosen variable set to None
+      # so no error is produced when write_to_files checks whether it exists
+      self.fileChosen = None
+
       # creates the grid where the widgets will be placed
       grid = QGridLayout()
+
+      # makes a fileChosen variable set to None
+      # so no error is produced when write_to_files checks whether it exists
+     # self.fileChosen = None
 
       # save_buttons widgets
       # names widget (text field for source and target/node names)
@@ -247,7 +255,7 @@ class VeilGUI(QDialog):
 
       mapView.setSceneRect(0,0,600,600)
       #sets the pixmap (the thing that displays the png) as the desired png
-      pic = QPixmap("map.png")
+      pic = QPixmap("map.dot.png")
       self.mapPic.addPixmap(pic)
       
       mapView.show()
@@ -283,8 +291,10 @@ class VeilGUI(QDialog):
       self.fileChosen = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd(), "DOT files (*.dot)")
       # if one is chosen, then make it the current graph and run write_to_files()
       if self.fileChosen[0]:
+         print(self.fileChosen[0])
          graph.g = graph.open_dot(self.fileChosen[0])
          self.write_to_files(self.fileChosen[0])
+
 
    # method when you click 'Save connection'
    def save_button_clicked(self):
@@ -325,8 +335,10 @@ class VeilGUI(QDialog):
             if edge and edge not in self.savedEdgesList:
                self.savedEdgesList.append(edge)
                graph.add_edge(edge)
-               #writes graph so it changes before the viewer's very eyes :o
-               self.write_to_files('map.png')
+               if self.fileChosen:
+                  self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
+               else:
+                  self.write_to_files('map.dot', 'map.dot.png')
 
    
    # deletes selected edge
@@ -347,13 +359,18 @@ class VeilGUI(QDialog):
          # checks if 
          # self.buttons_enabled()
          # writes to graph and displays the png
-         self.write_to_files('map.png')
+         if self.fileChosen:
+            self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
+         else:
+            self.write_to_files('map.dot', 'map.dot.png')
 
    # writes graph so it theoretically changes before the viewer's eyes
-   def write_to_files(self, chosen):
+   def write_to_files(self, chosenDot, chosenPng = ''):
       p = graph.to_pydot(graph.g)
-      p.write_png(chosen, prog='dot')
-      self.mapPic.addPixmap(QPixmap(chosen))
+      p.write_dot(chosenDot, prog = 'dot')
+      if chosenPng:
+         p.write_png(chosenPng, prog='dot')
+         self.mapPic.addPixmap(QPixmap(chosenPng))
       
 
 

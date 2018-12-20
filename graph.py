@@ -56,9 +56,11 @@ class Connection:
 
 
 
-# takes a dot file and opens it, turning it into a 
+
 def open_dot(dotFile):
     openedFile = read_dot(dotFile)
+    #writes graph so it changes before the viewer's very eyes :o
+    p = to_pydot(g)
     return openedFile
 
 # list to hold keys
@@ -126,9 +128,11 @@ def remove_edge(singleConnection):
 #print(*list_connection(RibbonCalder)[2:3])
 #print(*list_connection(RibbonCalder)[2:3])
 #print(*list_connection(RibbonCalder2)[:3])
+
+#open_dot('test.dot')
 #add_edge(RibbonCalder)
 #add_edge(RibbonCalder2)
-# add_edge(RibbonThiago)
+#add_edge(RibbonThiago)
 
 #print(nx.algorithms.descendants(g, list_connection(RibbonCalder)[0]))
 #print(g.edges())
@@ -137,7 +141,3 @@ def remove_edge(singleConnection):
 #print(g.edges())
 
 #print(g, list_connection(RibbonCalder)[0])
-
-p = to_pydot(g)
-p.write_dot('test.dot')
-p.write_png('test.png', prog='dot')
