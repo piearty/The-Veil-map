@@ -278,10 +278,9 @@ class VeilGUI(QDialog):
       line = self.radioButtonsDict['lineGroup'].checkedButton().text()
 
       if source and target:
-         connectionObject = graph.Connection(source, target, state, obligation, tenor, line)
+         connectionObject = graph.Connection(source, target, state, graph.uniqueKey(), obligation, tenor, line)
          self.edgesList.append(connectionObject)
-         connectionsList = graph.listConnection(connectionObject)
-         self.edgeCombo.addItem(connectionsList[0]+' to '+connectionsList[1])
+         self.edgeCombo.addItem(source + ' to ' + target + ', ' + state)
          for edge in self.edgesList:
             if edge not in self.savedEdgesList:
                self.savedEdgesList.append(edge)
