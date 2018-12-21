@@ -11,6 +11,8 @@ import pydot
 # random in order to create unique keys
 import random
 
+import copy
+
 # defines a directed multigraph called 'The Veil':
 # a graph that can have multiple lines between two nodes, and has arrows
 g = nx.MultiDiGraph(label="The Veil")
@@ -59,8 +61,6 @@ class Connection:
 
 def open_dot(dotFile):
     openedFile = read_dot(dotFile)
-    #writes graph so it changes before the viewer's very eyes :o
-    p = to_pydot(g)
     return openedFile
 
 # list to hold keys
@@ -105,24 +105,38 @@ def list_connection(singleConnection):
     names.append(attributes)
     return names
 
+
+
 # function to shorten typing bc i'm lazy
 # uses add_edges_from to create an edge
 def add_an_edge(singleConnection):
-    g.add_edges_from([list_connection(singleConnection)])
+    if singleConnection:
+        g.add_edges_from([list_connection(singleConnection)])
+
 
 # function to remove given edge
 # this doesn't quite work yet, deletes all edges associated :(
-def remove_an_edge(singleConnection):
-    connectionAsList = list_connection(singleConnection)
-    #unpacks and removes given edge
-    g.remove_edge(*connectionAsList[:3])
-    # if nodes that edge was connected to doesn't have any remaining connections, delete them
-    # for first node
-    if len(nx.algorithms.descendants(g, connectionAsList[0])) == 0:
-        g.remove_node(connectionAsList[0])
-    #  and second node
-    if len(nx.algorithms.descendants(g, connectionAsList[1])) == 0:
-        g.remove_node(connectionAsList[1])
+def remove_an_edge(singleConnection = '', listedConnection = ''):
+    if singleConnection:
+        connectionAsList = list_connection(singleConnection)
+        #unpacks and removes given edge
+        g.remove_edge(*connectionAsList[:3])
+        # if nodes that edge was connected to doesn't have any remaining connections, delete them
+        # for first node
+        if len(nx.algorithms.descendants(g, connectionAsList[0])) == 0:
+            g.remove_node(connectionAsList[0])
+        #  and second node
+        if len(nx.algorithms.descendants(g, connectionAsList[1])) == 0:
+            g.remove_node(connectionAsList[1])
+    if listedConnection and g.has_edge(*listedConnection):
+        g.remove_edge(*listedConnection)
+        # if nodes that edge was connected to doesn't have any remaining connections, delete them
+        # for first node
+        if len(nx.algorithms.descendants(g, listedConnection[0])) == 0:
+            g.remove_node(listedConnection[0])
+        #  and second node
+        if len(nx.algorithms.descendants(g, listedConnection[1])) == 0:
+            g.remove_node(listedConnection[1])
 
 
 #print(*list_connection(RibbonCalder)[2:3])
@@ -130,14 +144,28 @@ def remove_an_edge(singleConnection):
 #print(*list_connection(RibbonCalder2)[:3])
 
 #open_dot('test.dot')
-#add_edge(RibbonCalder)
-#add_edge(RibbonCalder2)
-#add_edge(RibbonThiago)
+#add_an_edge(RibbonCalder)
+#add_an_edge(RibbonCalder2)
+#add_an_edge(RibbonThiago)
+
+#g.add_edge('test', 'test1', key=1, color='blue')
+#g.add_edge('test', 'test1', key=2)
+
+#g.remove_edge('test', 'test1', key=2)
 
 #print(nx.algorithms.descendants(g, list_connection(RibbonCalder)[0]))
 #print(g.edges())
-#remove_edge(RibbonCalder)
+#remove_an_edge(RibbonCalder)
 
+#g = open_dot('test.dot')
+#openedEdgesList = g.edges()
+
+#for edge in copy.deepcopy(openedEdgesList):
+   # remove_an_edge(None, edge)
+
+#remove_an_edge(RibbonCalder)
 #print(g.edges())
 
-#print(g, list_connection(RibbonCalder)[0])
+#p = to_pydot(g)
+#p.write_dot('test.dot', prog = 'dot')
+#p.write_png('test.png', prog='dot')

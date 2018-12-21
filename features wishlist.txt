@@ -8,10 +8,16 @@
 - png preview in scrollable/resizable window :)
 - file directory :)
 
-- bug: viewport doesn't update with deleted edges :)
-- make opened file's edges listed, selectable and deletable
 
-^^ do these two things and then you can build
+- bug: deleting one edge (of the same direction) deletes all edges in that direction.
+    - keys didn't seem to do anything?
+
+- bug: viewport doesn't update with deleted edges :)
+- when you don't select a file to open during the file choosing dialog, the program breaks :)
+
+- make opened file's edges listed, selectable and deletable :)
+- should probably add a save file ability?
+^^ do these things and then you can build
 
 - autocomplete when word is entered 
 

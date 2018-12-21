@@ -291,8 +291,18 @@ class VeilGUI(QDialog):
       # if one is chosen, then make it the current graph and run write_to_files()
       if self.fileChosen[0]:
          print(self.fileChosen[0])
-         graph.g = graph.open_dot(self.fileChosen[0])
+         graph.g = graph.read_dot(self.fileChosen[0])
          self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
+         self.edgesList = []
+         self.savedEdgesList = []
+         self.edgeCombo.clear()
+         self.edgeCombo.addItem('')
+         for edge in graph.g.edges():
+            self.edgesList.append(edge)
+            self.savedEdgesList.append(edge)
+            self.edgeCombo.addItem(edge[0] + ' to ' + edge[1])
+      else:
+         self.fileChosen = None
 
 
    # method when you click 'Save connection'
@@ -326,7 +336,7 @@ class VeilGUI(QDialog):
          self.edgesList.append(connectionObject)
          # add object to combo box
          # looks like: Ribbon to Calder, joyful
-         self.edgeCombo.addItem(source + ' to ' + target + ', ' + state)
+         self.edgeCombo.addItem(source + ' to ' + target)
          # for edge in the list
          for edge in self.edgesList:
             # if it's not in savedEdgesList, add it to savedEdgesList and add the edge to the graph
@@ -334,6 +344,10 @@ class VeilGUI(QDialog):
             if edge and edge not in self.savedEdgesList:
                self.savedEdgesList.append(edge)
                graph.add_an_edge(edge)
+               # checks if a file is chosen by open_button_clicked dialog
+               # if yes, write to that file
+               # if no, write to map.dot and map.dot.png
+               # display graph
                if self.fileChosen:
                   self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
                else:
@@ -347,27 +361,34 @@ class VeilGUI(QDialog):
       refNum = self.edgeCombo.currentIndex() - 1
       # if that exists in the edges list
       if self.edgesList[refNum]:
-         # remove the edge from the graph
-         graph.remove_an_edge(self.edgesList[refNum])
+         if type(self.edgesList[refNum]) is tuple:
+        # remove the edge from the graph
+            graph.remove_an_edge(None, self.edgesList[refNum])
+         else:
+            graph.remove_an_edge(self.edgesList[refNum])
          # set the edge in the list to None
          self.edgesList.pop(refNum)
          # removes it from the combo box
          self.edgeCombo.removeItem(refNum + 1)
-         # checks if 
-         # self.buttons_enabled()
-         # writes to graph and displays the png
+         # checks if a file is chosen by open_button_clicked dialog
+         # if yes, write to that file
+         # if no, write to map.dot and map.dot.png
+         # display graph
          if self.fileChosen:
             self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
          else:
             self.write_to_files('map.dot', 'map.dot.png')
 
-   # writes graph so it theoretically changes before the viewer's eyes
-   def write_to_files(self, chosenDot, chosenPng = ''):
+   # writes graph so it changes before the viewer's eyes
+   # chosenDot is a dot file and chosenPng is a png file
+   def write_to_files(self, chosenDot, chosenPng):
+      # turns networkx graph to pydot graph
       p = graph.to_pydot(graph.g)
-      p.write_dot(chosenDot, prog = 'dot')
+      if chosenDot:
+         p.write_dot(chosenDot, prog = 'dot')
       if chosenPng:
          p.write_png(chosenPng, prog='dot')
-         self.mapItem.setPixmap(QPixmap('map.dot.png'))   
+         self.mapItem.setPixmap(QPixmap('map.dot.png'))
 
 def main():
 
