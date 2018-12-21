@@ -1,15 +1,4 @@
 digraph {
-	graph [bb="0,0,71.494,108"];
+	graph [bb="0,0,0,0"];
 	node [label="\N"];
-	dsfjlk	 [height=0.5,
-		pos="35.747,90",
-		width=0.84854];
-	fdfaew	 [height=0.5,
-		pos="35.747,18",
-		width=0.99297];
-	dsfjlk -> fdfaew [key="key=711439",
-	arrowhead=normal,
-	color="#f6e53d",
-	pos="e,35.747,36.104 35.747,71.697 35.747,63.983 35.747,54.712 35.747,46.112",
-	style=bold];
 }

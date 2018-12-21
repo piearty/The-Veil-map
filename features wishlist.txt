@@ -1,12 +1,22 @@
+:) = done
 
-- display selectable list of edges
-    - when selected, can be edited or deleted
-- import from dot file?
-- png preview in scrollable/resizable window
-- file directory
+
+- display selectable list of edges :)
+    - when selected, can be edited
+    - or deleted :)
+- import from dot file? :)
+- png preview in scrollable/resizable window :)
+- file directory :)
+
+- bug: viewport doesn't update with deleted edges :)
+- make opened file's edges listed, selectable and deletable
+
+^^ do these two things and then you can build
+
+- autocomplete when word is entered 
 
 - multiple export options?
-- autocomplete when word is entered 
+
 - affect node attributes as well
 
 eventual general widget

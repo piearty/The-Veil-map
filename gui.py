@@ -249,17 +249,16 @@ class VeilGUI(QDialog):
    def showMap(self):
       
       #creates the group and labels it
-      self.mapPic = QGraphicsScene()
+      mapPic = QGraphicsScene()
       mapView = QGraphicsView()
-      mapView.setScene(self.mapPic)
+      mapView.setScene(mapPic)
 
       mapView.setSceneRect(0,0,600,600)
       #sets the pixmap (the thing that displays the png) as the desired png
-      pic = QPixmap("map.dot.png")
-      self.mapPic.addPixmap(pic)
-      
-      mapView.show()
-      
+   #   pic = QPixmap("map.dot.png")
+
+      self.mapItem = QGraphicsPixmapItem()
+      mapPic.addItem(self.mapItem)
       #creates the group and labels it
       mapBox = QGroupBox('Map')
       #vertical layout
@@ -293,7 +292,7 @@ class VeilGUI(QDialog):
       if self.fileChosen[0]:
          print(self.fileChosen[0])
          graph.g = graph.open_dot(self.fileChosen[0])
-         self.write_to_files(self.fileChosen[0])
+         self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
 
 
    # method when you click 'Save connection'
@@ -334,7 +333,7 @@ class VeilGUI(QDialog):
             # (there's probably a better way to do this but I haven't figured it out)
             if edge and edge not in self.savedEdgesList:
                self.savedEdgesList.append(edge)
-               graph.add_edge(edge)
+               graph.add_an_edge(edge)
                if self.fileChosen:
                   self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
                else:
@@ -346,16 +345,14 @@ class VeilGUI(QDialog):
       # index number is the currently selected entry in the combo box
       # -1 bc the blank default edge exists
       refNum = self.edgeCombo.currentIndex() - 1
-      print(refNum, graph.g.edges(), self.edgesList[refNum])
       # if that exists in the edges list
       if self.edgesList[refNum]:
          # remove the edge from the graph
-         graph.remove_edge(self.edgesList[refNum])
+         graph.remove_an_edge(self.edgesList[refNum])
          # set the edge in the list to None
          self.edgesList.pop(refNum)
          # removes it from the combo box
          self.edgeCombo.removeItem(refNum + 1)
-         print(refNum, graph.g.edges())
          # checks if 
          # self.buttons_enabled()
          # writes to graph and displays the png
@@ -370,9 +367,7 @@ class VeilGUI(QDialog):
       p.write_dot(chosenDot, prog = 'dot')
       if chosenPng:
          p.write_png(chosenPng, prog='dot')
-         self.mapPic.addPixmap(QPixmap(chosenPng))
-      
-
+         self.mapItem.setPixmap(QPixmap('map.dot.png'))   
 
 def main():
 

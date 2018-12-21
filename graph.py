@@ -107,12 +107,12 @@ def list_connection(singleConnection):
 
 # function to shorten typing bc i'm lazy
 # uses add_edges_from to create an edge
-def add_edge(singleConnection):
+def add_an_edge(singleConnection):
     g.add_edges_from([list_connection(singleConnection)])
 
 # function to remove given edge
 # this doesn't quite work yet, deletes all edges associated :(
-def remove_edge(singleConnection):
+def remove_an_edge(singleConnection):
     connectionAsList = list_connection(singleConnection)
     #unpacks and removes given edge
     g.remove_edge(*connectionAsList[:3])
