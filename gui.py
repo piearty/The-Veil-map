@@ -12,6 +12,9 @@ from PyQt5.QtGui import *
 # imports allowing you to access current directory
 import os.path
 
+# to make temporary files so program doesn't crash on mac
+import tempfile
+
 # imports graph.py
 import graph
 
@@ -36,6 +39,15 @@ class VeilGUI(QDialog):
       # makes a fileChosen variable set to None
       # so no error is produced when write_to_files checks whether it exists
       self.fileChosen = None
+
+      self.tempFolder = tempfile.gettempdir()
+      self.tempDotFileName = tempfile.gettempprefix() + 'map.dot'
+      self.tempDotFilePath = os.path.join(self.tempFolder, self.tempDotFileName)
+      self.tempPngFileName = tempfile.gettempprefix() + 'map.png'
+      self.tempPngFilePath = os.path.join(self.tempFolder, self.tempPngFileName)
+
+      print(self.tempDotFilePath)
+
 
       # creates the grid where the widgets will be placed
       grid = QGridLayout()
@@ -105,18 +117,18 @@ class VeilGUI(QDialog):
       return radioBox
 
    def saveButtonGroup(self):
-      # creates button labeled Save Connection
-      saveButton = QPushButton("\nSave\nConnection\n")
-      saveButton.setCheckable(True)
+      # creates button labeled saveConnection Connection
+      saveConnectionButton = QPushButton("\nSave\nConnection\n")
+      saveConnectionButton.setCheckable(True)
 
-      # box containing save button
-      saveButtonBox = QDialogButtonBox()
-      saveButtonBox.addButton(saveButton, QDialogButtonBox.ActionRole)
+      # box containing saveConnection button
+      saveConnectionButtonBox = QDialogButtonBox()
+      saveConnectionButtonBox.addButton(saveConnectionButton, QDialogButtonBox.ActionRole)
 
-      # when clicked, run the save_button_clicked method respectively
-      saveButton.clicked.connect(self.save_button_clicked)
+      # when clicked, run the saveConnection_button_clicked method respectively
+      saveConnectionButton.clicked.connect(self.save_connection_button_clicked)
 
-      return saveButtonBox
+      return saveConnectionButtonBox
 
    def edgeButtonsGroup(self):
       # creates buttons labeled edit, and delete, but makes it so they can't be clicked on yet
@@ -125,6 +137,7 @@ class VeilGUI(QDialog):
       #self.editingButton.setCheckable(True)
       #self.editingButton.setEnabled(False)
 
+
       self.openingButton = QPushButton("Open")
       self.openingButton.setCheckable(True)
 
@@ -132,13 +145,18 @@ class VeilGUI(QDialog):
       self.deletingButton.setCheckable(True)
       self.deletingButton.setEnabled(False)
 
-      # box containing edit and delete buttons (these modify the edges)
+      self.savingButton = QPushButton("Save file")
+      self.savingButton.setCheckable(True)
+      self.savingButton.setEnabled(False)
+
+      # box containing save, edit, open, and delete buttons (these modify the edges)
       edgeButtonsBox = QDialogButtonBox()
      # edgeButtonsBox.addButton(self.editingButton, QDialogButtonBox.ActionRole)
       edgeButtonsBox.addButton(self.openingButton, QDialogButtonBox.ActionRole)
       edgeButtonsBox.addButton(self.deletingButton, QDialogButtonBox.ActionRole)
+      edgeButtonsBox.addButton(self.savingButton, QDialogButtonBox.ActionRole)
       
-      
+
       # below is code that's not implemented yet
       # self.editingButton.clicked.connect(self.edit_button_clicked)
 
@@ -146,7 +164,7 @@ class VeilGUI(QDialog):
       # also run buttons_enabled method
       self.openingButton.clicked.connect(self.open_button_clicked)
       self.deletingButton.clicked.connect(self.del_button_clicked)
-      #self.deletingButton.clicked.connect(self.buttons_enabled)
+      self.savingButton.clicked.connect(self.save_button_clicked)
 
       return edgeButtonsBox
 
@@ -284,12 +302,17 @@ class VeilGUI(QDialog):
       elif self.edgeCombo.currentIndex() == 0:
      #    self.editingButton.setEnabled(False)
          self.deletingButton.setEnabled(False)
+      if len(self.edgesList) >= 1:
+         self.savingButton.setEnabled(True)
+      elif len(self.edgesList) == 0:
+         self.savingButton.setEnabled(False)
 
    # opens a file dialog so you can pick a dot file (default from the current working directory)
    def open_button_clicked(self):
-      self.fileChosen = QFileDialog.getOpenFileName(self, 'Open file', os.getcwd(), "DOT files (*.dot)")
+      self.openFileChosen = QFileDialog.getOpenFileName(self, 'Open file', '', "DOT files (*.dot)")
       # if one is chosen, then make it the current graph and run write_to_files()
-      if self.fileChosen[0]:
+      if self.openFileChosen[0]:
+         self.fileChosen = self.openFileChosen
          print(self.fileChosen[0])
          graph.g = graph.read_dot(self.fileChosen[0])
          self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
@@ -301,12 +324,9 @@ class VeilGUI(QDialog):
             self.edgesList.append(edge)
             self.savedEdgesList.append(edge)
             self.edgeCombo.addItem(edge[0] + ' to ' + edge[1])
-      else:
-         self.fileChosen = None
 
-
-   # method when you click 'Save connection'
-   def save_button_clicked(self):
+   # method when you click 'saveConnection connection'
+   def save_connection_button_clicked(self):
       # sets variables then clears the text fields when applicable
       source = self.sourceLine.text()
       self.sourceLine.setText('')
@@ -351,7 +371,8 @@ class VeilGUI(QDialog):
                if self.fileChosen:
                   self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
                else:
-                  self.write_to_files('map.dot', 'map.dot.png')
+                  self.write_to_files(self.tempDotFilePath, self.tempPngFilePath)
+               self.buttons_enabled()
 
    
    # deletes selected edge
@@ -377,18 +398,28 @@ class VeilGUI(QDialog):
          if self.fileChosen:
             self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
          else:
-            self.write_to_files('map.dot', 'map.dot.png')
+            self.write_to_files(self.tempDotFilePath, self.tempPngFilePath)
+
+   def save_button_clicked(self):
+      self.saveFileChosen = QFileDialog.getSaveFileName(self, 'Save file', '', "DOT files (*.dot)")
+      # if one is chosen, then make it the current graph and run write_to_files()
+      if self.saveFileChosen[0]:
+         self.fileChosen = self.saveFileChosen
+         print(self.fileChosen[0])
+         self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
+
 
    # writes graph so it changes before the viewer's eyes
    # chosenDot is a dot file and chosenPng is a png file
    def write_to_files(self, chosenDot, chosenPng):
+      print(chosenDot, chosenPng)
       # turns networkx graph to pydot graph
       p = graph.to_pydot(graph.g)
       if chosenDot:
          p.write_dot(chosenDot, prog = 'dot')
       if chosenPng:
          p.write_png(chosenPng, prog='dot')
-         self.mapItem.setPixmap(QPixmap('map.dot.png'))
+         self.mapItem.setPixmap(QPixmap(chosenPng))
 
 def main():
 

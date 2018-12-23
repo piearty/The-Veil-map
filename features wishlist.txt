@@ -16,7 +16,7 @@
 - when you don't select a file to open during the file choosing dialog, the program breaks :)
 
 - make opened file's edges listed, selectable and deletable :)
-- should probably add a save file ability?
+- should probably add a save file ability? :)
 ^^ do these things and then you can build
 
 - autocomplete when word is entered 
