@@ -2,4 +2,4 @@
 /dist/*
 features_wishlist.txt
 *.pyc
-__pycache__
+/__pycache__/*
