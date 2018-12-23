@@ -1,2 +1,5 @@
 /build/*
 /dist/*
+features_wishlist.txt
+*.pyc
+__pycache__
