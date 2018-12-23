@@ -3,3 +3,4 @@
 features_wishlist.txt
 *.pyc
 /__pycache__/*
+gui.spec
