@@ -1,5 +1,5 @@
 # this file does the graph writing and processing using networkx and graphviz
-# right now it's very specialized to work for making relationship maps for The Veil prg campaign I'm in
+# right now it's very specialized to work for making relationship maps for The Veil rpg campaign I'm in
 # (i'm a huge nerd)
 
 # graph maker
@@ -58,7 +58,7 @@ class Connection:
 
 
 
-
+# opens the dot file that determines what the graph looks like
 def open_dot(dotFile):
     openedFile = read_dot(dotFile)
     return openedFile
@@ -67,6 +67,7 @@ def open_dot(dotFile):
 keys_list = []
 
 # makes unique keys to reference the edges with
+# i'm not sure this feature does anything effective right now...
 def unique_key():
     # makes a key
     singleKey = random.getrandbits(20)
@@ -76,9 +77,10 @@ def unique_key():
         keys_list.append(singleKey)
         return singleKey
 
-RibbonCalder = Connection('Ribbon', 'Calder', 'joyful', unique_key())
-RibbonCalder2 = Connection('Ribbon', 'Calder', 'peaceful', unique_key())
-RibbonThiago = Connection('Ribbon', 'Thiago', 'peaceful', unique_key())
+# (just some test code)
+#RibbonCalder = Connection('Ribbon', 'Calder', 'joyful', unique_key())
+#RibbonCalder2 = Connection('Ribbon', 'Calder', 'peaceful', unique_key())
+#RibbonThiago = Connection('Ribbon', 'Thiago', 'peaceful', unique_key())
 
 # turns object attributes into a list that can be readable by add_edges_from
 def list_connection(singleConnection):
@@ -113,30 +115,33 @@ def add_an_edge(singleConnection):
     if singleConnection:
         g.add_edges_from([list_connection(singleConnection)])
 
+# function to clear the whole graph and start over (because I'm having trouble with remove_an_edge())
+def clear_graph():
+    g.clear()
 
 # function to remove given edge
 # this doesn't quite work yet, deletes all edges associated :(
-def remove_an_edge(singleConnection = '', listedConnection = ''):
-    if singleConnection:
-        connectionAsList = list_connection(singleConnection)
+#def remove_an_edge(singleConnection = '', listedConnection = ''):
+ #   if singleConnection:
+  #      connectionAsList = list_connection(singleConnection)
         #unpacks and removes given edge
-        g.remove_edge(*connectionAsList[:3])
+#        g.remove_edge(*connectionAsList[:3])
         # if nodes that edge was connected to doesn't have any remaining connections, delete them
         # for first node
-        if len(nx.algorithms.descendants(g, connectionAsList[0])) == 0:
-            g.remove_node(connectionAsList[0])
+#        if len(nx.algorithms.descendants(g, connectionAsList[0])) == 0:
+#            g.remove_node(connectionAsList[0])
         #  and second node
-        if len(nx.algorithms.descendants(g, connectionAsList[1])) == 0:
-            g.remove_node(connectionAsList[1])
-    if listedConnection and g.has_edge(*listedConnection):
-        g.remove_edge(*listedConnection)
+#        if len(nx.algorithms.descendants(g, connectionAsList[1])) == 0:
+ #           g.remove_node(connectionAsList[1])
+ #   if listedConnection and g.has_edge(*listedConnection):
+  #      g.remove_edge(*listedConnection)
         # if nodes that edge was connected to doesn't have any remaining connections, delete them
         # for first node
-        if len(nx.algorithms.descendants(g, listedConnection[0])) == 0:
-            g.remove_node(listedConnection[0])
+   #     if len(nx.algorithms.descendants(g, listedConnection[0])) == 0:
+    #        g.remove_node(listedConnection[0])
         #  and second node
-        if len(nx.algorithms.descendants(g, listedConnection[1])) == 0:
-            g.remove_node(listedConnection[1])
+     #   if len(nx.algorithms.descendants(g, listedConnection[1])) == 0:
+      #      g.remove_node(listedConnection[1])
 
 
 #print(*list_connection(RibbonCalder)[2:3])

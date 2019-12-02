@@ -131,8 +131,8 @@ class VeilGUI(QDialog):
       return saveConnectionButtonBox
 
    def edgeButtonsGroup(self):
-      # creates buttons labeled edit, and delete, but makes it so they can't be clicked on yet
-      # edit button doesn't work yet
+      # creates buttons labeled edit, clear, and delete, but makes it so they can't be clicked on yet
+      # edit and delete button don't work yet
      # self.editingButton = QPushButton("Edit")
       #self.editingButton.setCheckable(True)
       #self.editingButton.setEnabled(False)
@@ -141,19 +141,24 @@ class VeilGUI(QDialog):
       self.openingButton = QPushButton("Open")
       self.openingButton.setCheckable(True)
 
-      self.deletingButton = QPushButton("Delete")
-      self.deletingButton.setCheckable(True)
-      self.deletingButton.setEnabled(False)
+     # self.deletingButton = QPushButton("Delete")
+     # self.deletingButton.setCheckable(True)
+     # self.deletingButton.setEnabled(False)
+
+      self.clearingButton = QPushButton("Clear")
+      self.clearingButton.setCheckable(True)
+      self.clearingButton.setEnabled(False)
 
       self.savingButton = QPushButton("Save file")
       self.savingButton.setCheckable(True)
       self.savingButton.setEnabled(False)
 
-      # box containing save, edit, open, and delete buttons (these modify the edges)
+      # box containing save, edit, open, clear, and delete buttons (these modify the edges)
       edgeButtonsBox = QDialogButtonBox()
      # edgeButtonsBox.addButton(self.editingButton, QDialogButtonBox.ActionRole)
       edgeButtonsBox.addButton(self.openingButton, QDialogButtonBox.ActionRole)
-      edgeButtonsBox.addButton(self.deletingButton, QDialogButtonBox.ActionRole)
+      edgeButtonsBox.addButton(self.clearingButton, QDialogButtonBox.ActionRole)
+   #   edgeButtonsBox.addButton(self.deletingButton, QDialogButtonBox.ActionRole)
       edgeButtonsBox.addButton(self.savingButton, QDialogButtonBox.ActionRole)
       
 
@@ -163,7 +168,8 @@ class VeilGUI(QDialog):
       # when delete button is clicked, run the delete button method
       # also run buttons_enabled method
       self.openingButton.clicked.connect(self.open_button_clicked)
-      self.deletingButton.clicked.connect(self.del_button_clicked)
+  #    self.deletingButton.clicked.connect(self.del_button_clicked)
+      self.clearingButton.clicked.connect(self.clear_button_clicked)
       self.savingButton.clicked.connect(self.save_button_clicked)
 
       return edgeButtonsBox
@@ -293,20 +299,22 @@ class VeilGUI(QDialog):
    # method to enable or disable the edit and delete buttons
    def buttons_enabled(self):
       # if the combo box is not at the default (blank), enable the buttons (make them clickable)
-      if self.edgeCombo.currentIndex() >= 1:
+      #if self.edgeCombo.currentIndex() >= 1:
       #   self.editingButton.setEnabled(True)
-         self.deletingButton.setEnabled(True)
+   #      self.deletingButton.setEnabled(True)
       # if the combo box is at the default (blank), disable the buttons
       # this only disables if you click the delete button twice once it's empty? :(
       # i think it's bc it only calls/checks when the delete button is pressed so
-      elif self.edgeCombo.currentIndex() == 0:
+      #elif self.edgeCombo.currentIndex() == 0:
      #    self.editingButton.setEnabled(False)
-         self.deletingButton.setEnabled(False)
+     #    self.deletingButton.setEnabled(False)
+     #if there's an edge present, enable the save and clear buttons. if the graph is empty, disable them.
       if len(self.edgesList) >= 1:
          self.savingButton.setEnabled(True)
+         self.clearingButton.setEnabled(True)
       elif len(self.edgesList) == 0:
          self.savingButton.setEnabled(False)
-
+         self.clearingButton.setEnabled(False)
    # opens a file dialog so you can pick a dot file (default from the current working directory)
    def open_button_clicked(self):
       self.openFileChosen = QFileDialog.getOpenFileName(self, 'Open file', '', "DOT files (*.dot)")
@@ -374,31 +382,49 @@ class VeilGUI(QDialog):
                   self.write_to_files(self.tempDotFilePath, self.tempPngFilePath)
                self.buttons_enabled()
 
-   
-   # deletes selected edge
-   def del_button_clicked(self):
-      # index number is the currently selected entry in the combo box
-      # -1 bc the blank default edge exists
-      refNum = self.edgeCombo.currentIndex() - 1
-      # if that exists in the edges list
-      if self.edgesList[refNum]:
-         if type(self.edgesList[refNum]) is tuple:
-        # remove the edge from the graph
-            graph.remove_an_edge(None, self.edgesList[refNum])
-         else:
-            graph.remove_an_edge(self.edgesList[refNum])
-         # set the edge in the list to None
-         self.edgesList.pop(refNum)
-         # removes it from the combo box
-         self.edgeCombo.removeItem(refNum + 1)
+   #clears entire graph
+   def clear_button_clicked(self):
+      graph.clear_graph()
+      # set all edges in the list to None
+      self.edgesList = []
+      # removes everything from the combo box
+      self.edgeCombo = QComboBox()
          # checks if a file is chosen by open_button_clicked dialog
          # if yes, write to that file
          # if no, write to map.dot and map.dot.png
          # display graph
-         if self.fileChosen:
-            self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
-         else:
-            self.write_to_files(self.tempDotFilePath, self.tempPngFilePath)
+      if self.fileChosen:
+         self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
+      else:
+         self.write_to_files(self.tempDotFilePath, self.tempPngFilePath)
+
+
+
+   # deletes selected edge
+   #doesn't work right now/buggy
+  # def del_button_clicked(self):
+      # index number is the currently selected entry in the combo box
+      # -1 bc the blank default edge exists
+   #   refNum = self.edgeCombo.currentIndex() - 1
+      # if that exists in the edges list
+    #  if self.edgesList[refNum]:
+     #    if type(self.edgesList[refNum]) is tuple:
+        # remove the edge from the graph
+     #       graph.remove_an_edge(None, self.edgesList[refNum])
+      #   else:
+       #     graph.remove_an_edge(self.edgesList[refNum])
+         # set the edge in the list to None
+        # self.edgesList.pop(refNum)
+         # removes it from the combo box
+         #self.edgeCombo.removeItem(refNum + 1)
+         # checks if a file is chosen by open_button_clicked dialog
+         # if yes, write to that file
+         # if no, write to map.dot and map.dot.png
+         # display graph
+         #if self.fileChosen:
+          #  self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
+         #else:
+          #  self.write_to_files(self.tempDotFilePath, self.tempPngFilePath)
 
    def save_button_clicked(self):
       self.saveFileChosen = QFileDialog.getSaveFileName(self, 'Save file', '', "DOT files (*.dot)")
