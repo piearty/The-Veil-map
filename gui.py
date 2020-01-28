@@ -52,10 +52,6 @@ class VeilGUI(QDialog):
       # creates the grid where the widgets will be placed
       grid = QGridLayout()
 
-      # makes a fileChosen variable set to None
-      # so no error is produced when write_to_files checks whether it exists
-     # self.fileChosen = None
-
       # save_buttons widgets
       # names widget (text field for source and target/node names)
       grid.addWidget(self.namesBoxGroup(), 0, 0)
@@ -149,7 +145,7 @@ class VeilGUI(QDialog):
       self.clearingButton.setCheckable(True)
       self.clearingButton.setEnabled(False)
 
-      self.savingButton = QPushButton("Save file")
+      self.savingButton = QPushButton("Save file as")
       self.savingButton.setCheckable(True)
       self.savingButton.setEnabled(False)
 
@@ -320,15 +316,16 @@ class VeilGUI(QDialog):
       self.openFileChosen = QFileDialog.getOpenFileName(self, 'Open file', '', "DOT files (*.dot)")
       # if one is chosen, then make it the current graph and run write_to_files()
       if self.openFileChosen[0]:
+         self.edgesList = []
+         self.savedEdgesList = []
+         self.edgeCombo.clear()
          self.fileChosen = self.openFileChosen
          print(self.fileChosen[0])
          graph.g = graph.read_dot(self.fileChosen[0])
          self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
-         self.edgesList = []
-         self.savedEdgesList = []
-         self.edgeCombo.clear()
          self.edgeCombo.addItem('')
          for edge in graph.g.edges():
+            print(edge)
             self.edgesList.append(edge)
             self.savedEdgesList.append(edge)
             self.edgeCombo.addItem(edge[0] + ' to ' + edge[1])
@@ -380,6 +377,7 @@ class VeilGUI(QDialog):
                   self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
                else:
                   self.write_to_files(self.tempDotFilePath, self.tempPngFilePath)
+               # enable save and clear buttons because there's an edge to save or clear
                self.buttons_enabled()
 
    #clears entire graph
@@ -388,15 +386,16 @@ class VeilGUI(QDialog):
       # set all edges in the list to None
       self.edgesList = []
       # removes everything from the combo box
-      self.edgeCombo = QComboBox()
+      self.edgeCombo.clear()
          # checks if a file is chosen by open_button_clicked dialog
          # if yes, write to that file
          # if no, write to map.dot and map.dot.png
          # display graph
-      if self.fileChosen:
-         self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
-      else:
-         self.write_to_files(self.tempDotFilePath, self.tempPngFilePath)
+      #[commented out code to prevent clear from wiping a file and autosaving after]
+     # if self.fileChosen:
+      #   self.write_to_files(self.fileChosen[0], self.fileChosen[0]+'.png')
+      #else:
+      self.write_to_files(self.tempDotFilePath, self.tempPngFilePath)
 
 
 

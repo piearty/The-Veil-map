@@ -61,6 +61,7 @@ class Connection:
 # opens the dot file that determines what the graph looks like
 def open_dot(dotFile):
     openedFile = read_dot(dotFile)
+    print(openedFile)
     return openedFile
 
 # list to hold keys
@@ -143,7 +144,7 @@ def clear_graph():
      #   if len(nx.algorithms.descendants(g, listedConnection[1])) == 0:
       #      g.remove_node(listedConnection[1])
 
-
+#(a bunch of tests below)
 #print(*list_connection(RibbonCalder)[2:3])
 #print(*list_connection(RibbonCalder)[2:3])
 #print(*list_connection(RibbonCalder2)[:3])
